@@ -5,7 +5,8 @@ Created on Fri Feb 26 13:36:12 2016
 @author: DataLab1
 """
 
-import SQSManager as m
+import SQSManager as mgr
+import SQSMessage as m
 
 queueAttributes = {'DelaySeconds': '5', 'ReceiveMessageWaitTimeSeconds': '1'}
 messageAttributes = {'Author': {
@@ -18,16 +19,32 @@ messageAttributes = {'Author': {
         }
 }
 
-q = m.SQSManager("ThorneycreekSQS",queueAttributes)
+q = mgr.SQSManager("ThorneycreekSQS",queueAttributes)
+
+
+msg = m.SQSMessage()
 '''
-print q.PostMessage(", Thorneycreek",messageAttributes)
-print q.PostMessage("again, Thorneycreek",messageAttributes)
-print q.PostMessage("once more, Thorneycreek",messageAttributes)
-print q.PostMessage("a fourth time, Thorneycreek",messageAttributes)
-print q.PostMessage("for the last time, Thorneycreek",messageAttributes)
+print msg.messageAttributes
+print msg.AttributeNames()
+
+msg.SetAuthor('Ian')
+msg.SetMessageType('New Class Message')
+print msg.messageAttributes
+
+msg.message = ", Thorneycreek"
+print q.PostMessage(msg)
+msg.message = "again, Thorneycreek"
+print q.PostMessage(msg)
+msg.message = "once more, Thorneycreek"
+print q.PostMessage(msg)
+msg.message = "a fourth time, Thorneycreek"
+print q.PostMessage(msg)
+msg.message = "for the last time, Thorneycreek"
+print q.PostMessage(msg)
+
 
 '''
-messages = q.ProcessMessages(['Author','MessageType'])
+messages = q.ProcessMessages(msg.AttributeNames())
 while len(messages) > 0:
 
     for message in messages:
@@ -44,5 +61,4 @@ while len(messages) > 0:
                      
         message.delete()
         
-    print 'polling for more messages'
-    messages = q.ProcessMessages(['Author','MessageType'])
+    messages = q.ProcessMessages(msg.AttributeNames())

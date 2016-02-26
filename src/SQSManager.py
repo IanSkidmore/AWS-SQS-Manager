@@ -10,6 +10,7 @@ Helper routines to manage AWS SQS resources
 import boto3
 
 class SQSManager():
+    
     def __init__(self, name, attributes):
         self.queueName = name
         self.sqs = boto3.resource('sqs')
@@ -26,9 +27,9 @@ class SQSManager():
             queue = self.CreateQueue()
         return queue
         
-    def PostMessage(self,message,attributes):
+    def PostMessage(self,m):
         queue = self.FetchQueue()
-        response = queue.send_message(MessageBody=message, MessageAttributes=attributes)
+        response = queue.send_message(MessageBody=m.message, MessageAttributes=m.messageAttributes)
         return response.get('MessageId')
     
     def ProcessMessages(self, attributeNames):  
