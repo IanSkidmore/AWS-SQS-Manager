@@ -12,6 +12,10 @@ class SQSMessage():
             'StringValue': '',
             'DataType': 'String'
             },
+            'Timestamp': {
+            'StringValue': '',
+            'DataType': 'String'
+            },            
             'MessageType': {
             'StringValue': '',
             'DataType': 'String'   
@@ -24,6 +28,9 @@ class SQSMessage():
 
     def SetMessageType(self,n):
         self.messageAttributes['MessageType']['StringValue'] = n
+        
+    def SetTimestamp(self,n):
+        self.messageAttributes['Timestamp']['StringValue'] = n
         
     def AttributeNames(self):
         return [i for i in self.messageAttributes.keys()]

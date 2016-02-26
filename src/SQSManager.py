@@ -28,7 +28,9 @@ class SQSManager():
         return queue
         
     def PostMessage(self,m):
+        import datetime
         queue = self.FetchQueue()
+        m.SetTimestamp(datetime.datetime.now().isoformat())
         response = queue.send_message(MessageBody=m.message, MessageAttributes=m.messageAttributes)
         return response.get('MessageId')
     

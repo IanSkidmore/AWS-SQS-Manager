@@ -20,8 +20,6 @@ messageAttributes = {'Author': {
 }
 
 q = mgr.SQSManager("ThorneycreekSQS",queueAttributes)
-
-
 msg = m.SQSMessage()
 '''
 print msg.messageAttributes
@@ -50,10 +48,10 @@ while len(messages) > 0:
     for message in messages:
         if message.message_attributes is not None:
             authorName = message.message_attributes.get('Author').get('StringValue')
-    
+            timestamp = message.message_attributes.get('Timestamp').get('StringValue')    
             msgType = message.message_attributes.get('MessageType').get('StringValue')
             print "This is a message of type {0}".format(msgType)
-    
+            print "it was sent at {0}".format(timestamp)
             if authorName:
                 print "Hello {0} from {1}".format(message.body,authorName)
             else:
