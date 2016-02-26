@@ -8,40 +8,29 @@ Helper routines to manage AWS SQS resources
 """
 
 import boto3
-queueName = "ThorneycreekSQS"
 
-def CreateQueue(queueName,attributes):
-    sqs = boto3.resource('sqs')
-            
-    queue = sqs.create_queue(QueueName=queueName,Attributes=attributes)
+class SQSManager():
+    def __init__(self, name, attributes):
+        self.queueName = name
+        self.sqs = boto3.resource('sqs')
+        self.attributes = attributes
+
+    def CreateQueue(self):           
+        queue = self.sqs.create_queue(QueueName=self.queueName,Attributes=self.attributes)        
+        return queue
+        
+    def FetchQueue(self):
+        try:
+            queue = self.sqs.get_queue_by_name(QueueName=self.queueName)
+        except:
+            queue = self.CreateQueue()
+        return queue
+        
+    def PostMessage(self,message,attributes):
+        queue = self.FetchQueue()
+        response = queue.send_message(MessageBody=message, MessageAttributes=attributes)
+        return response.get('MessageId')
     
-    print queue.url
-    
-def PostMessage(queueName,messageText,author):
-    sqs = boto3.resource('sqs')
-    attributes = {'Author': {
-        'StringValue': author,
-        'DataType': 'String'
-        }
-    }
-    queue = sqs.get_queue_by_name(QueueName=queueName)
-    response = queue.send_message(MessageBody=messageText, MessageAttributes=attributes)
-
-    print response.get('MessageId')
-
-def ProcessMessages(queueName):
-    sqs = boto3.resource('sqs')
-    
-    queue = sqs.get_queue_by_name(QueueName=queueName)
-    
-    for message in queue.receive_messages(MessageAttributeNames=['Author']):
-
-        if message.message_attributes is not None:
-            authorName = message.message_attributes.get('Author').get('StringValue')
-            if authorName:
-                print "Hello, {0}! from {1}".format(message.body,authorName)
-            else:
-               print "Hello, {0}!".format(message.body)
-                 
-    message.delete()
-
+    def ProcessMessages(self, attributeNames):  
+        queue = self.FetchQueue()
+        return queue.receive_messages(MessageAttributeNames=attributeNames)
