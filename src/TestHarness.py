@@ -7,6 +7,7 @@ Created on Fri Feb 26 13:36:12 2016
 
 import SQSManager as mgr
 import SQSMessage as m
+import Crypter
 
 queueAttributes = {'DelaySeconds': '5', 'ReceiveMessageWaitTimeSeconds': '1'}
 messageAttributes = {'Author': {
@@ -21,13 +22,13 @@ messageAttributes = {'Author': {
 
 q = mgr.SQSManager("ThorneycreekSQS",queueAttributes)
 msg = m.SQSMessage()
-'''
-print msg.messageAttributes
-print msg.AttributeNames()
+
+#print msg.messageAttributes
+#print msg.AttributeNames()
 
 msg.SetAuthor('Ian')
 msg.SetMessageType('New Class Message')
-print msg.messageAttributes
+#print msg.messageAttributes
 
 msg.message = ", Thorneycreek"
 print q.PostMessage(msg)
@@ -50,13 +51,23 @@ while len(messages) > 0:
             authorName = message.message_attributes.get('Author').get('StringValue')
             timestamp = message.message_attributes.get('Timestamp').get('StringValue')    
             msgType = message.message_attributes.get('MessageType').get('StringValue')
+            encryptMessage = message.body
+            
             print "This is a message of type {0}".format(msgType)
             print "it was sent at {0}".format(timestamp)
+            
             if authorName:
-                print "Hello {0} from {1}".format(message.body,authorName)
+                print "Hello {0} from {1}".format(encryptMessage,authorName)
             else:
-               print "Hello {0}!".format(message.body)
+               print "Hello {0}!".format(encryptMessage)
+            
+            decryptMessage = Crypter.decrypt(message)
+            if authorName:
+                print "Hello {0} from {1}".format(decryptMessage,authorName)
+            else:
+               print "Hello {0}!".format(decryptMessage)
                      
         message.delete()
         
     messages = q.ProcessMessages(msg.AttributeNames())
+'''

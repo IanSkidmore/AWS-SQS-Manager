@@ -15,7 +15,11 @@ class SQSMessage():
             'Timestamp': {
             'StringValue': '',
             'DataType': 'String'
-            },            
+            },
+            'Version': {
+            'StringValue': '',
+            'DataType': 'String'
+            },             
             'MessageType': {
             'StringValue': '',
             'DataType': 'String'   
@@ -31,6 +35,12 @@ class SQSMessage():
         
     def SetTimestamp(self,n):
         self.messageAttributes['Timestamp']['StringValue'] = n
+
+    def SetVersion(self,n):
+        self.messageAttributes['Version']['StringValue'] = n
         
     def AttributeNames(self):
         return [i for i in self.messageAttributes.keys()]
+        
+    def EncryptedMessage():
+        return self.messageAttributes['Version']['Stringvalue']+self.message
